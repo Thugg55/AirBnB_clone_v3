@@ -6,6 +6,7 @@ Contains the TestFileStorageDocs classes
 from datetime import datetime
 import inspect
 import models
+from models.engine import db_storage
 from models.engine import file_storage
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -113,3 +114,49 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
+        class TestStorageMethods(unittest.TestCase):
+    def setUp(self):
+        # Initialize DBStorage and FileStorage instances for testing
+        self.db_storage = DBStorage()
+        self.file_storage = FileStorage()
+
+        # Add some objects to storage for testing
+        # Replace this with actual initialization based on your implementation
+        self.db_storage.storage = {
+            'ClassA': {'id1': 'ObjectA1', 'id2': 'ObjectA2'},
+            'ClassB': {'id3': 'ObjectB1'}
+        }
+        self.file_storage.storage = {
+            'id1': 'ObjectA1',
+            'id2': 'ObjectA2',
+            'id3': 'ObjectB1'
+        }
+
+    def test_get_method(self):
+        # Test get() method for DBStorage
+        self.assertEqual(self.db_storage.get('ClassA', 'id1'), 'ObjectA1')
+        self.assertEqual(self.db_storage.get('ClassB', 'id3'), 'ObjectB1')
+        self.assertIsNone(self.db_storage.get('NonExistentClass', 'id1'))
+
+        # Test get() method for FileStorage
+        self.assertEqual(self.file_storage.get('ClassA', 'id1'), 'ObjectA1')
+        self.assertEqual(self.file_storage.get('ClassA', 'id2'), 'ObjectA2')
+        self.assertEqual(self.file_storage.get('ClassB', 'id3'), 'ObjectB1')
+        self.assertIsNone(self.file_storage.get('NonExistentClass', 'id1'))
+
+    def test_count_method(self):
+        # Test count() method for DBStorage
+        self.assertEqual(self.db_storage.count('ClassA'), 2)
+        self.assertEqual(self.db_storage.count('ClassB'), 1)
+        self.assertEqual(self.db_storage.count('NonExistentClass'), 0)
+        self.assertEqual(self.db_storage.count(), 3)  # Count all objects
+
+        # Test count() method for FileStorage
+        self.assertEqual(self.file_storage.count('ClassA'), 2)
+        self.assertEqual(self.file_storage.count('ClassB'), 1)
+        self.assertEqual(self.file_storage.count('NonExistentClass'), 0)
+        self.assertEqual(self.file_storage.count(), 3)  # Count all objects
+
+if __name__ == '__main__':
+    unittest.main()
