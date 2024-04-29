@@ -61,11 +61,14 @@ class DBStorage:
 
     def get(self, cls, id):
         """ implementation of get method """
-        pass
+        return self.__session.query(cls).filter(cls.id == id).first()
+
 
     def count(self, cls=None):
         """ implementation of count method """
-        pass
+        if cls is None:
+            return len(self.all())
+        return len(self.all(cls))
 
     def delete(self, obj=None):
         """delete from the current database session obj if not None"""
